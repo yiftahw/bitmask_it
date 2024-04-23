@@ -15,6 +15,7 @@ class BitmaskIterator
 private:
     T m_mask;
     T m_bit;
+    static inline constexpr T max_bit = sizeof(T) * 8;
 
 public:
     struct iterator
@@ -71,7 +72,6 @@ public:
 
         iterator &find_next()
         {
-            uint64_t max_bit = sizeof(T) * 8;
             while (m_bit < max_bit)
             {
                 m_bit++;
@@ -96,6 +96,6 @@ public:
 
     iterator end()
     {
-        return iterator(m_mask, sizeof(T) * 8);
+        return iterator(m_mask, max_bit);
     }
 };
