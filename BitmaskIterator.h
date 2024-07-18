@@ -14,7 +14,7 @@ class BitmaskIterator
 {
 private:
     T m_mask;
-    T m_bit;
+    T m_start_bit;
     static inline constexpr T max_bit = sizeof(T) * 8;
 
 public:
@@ -26,7 +26,7 @@ public:
         using pointer = T *;
         using reference = T &;
 
-        iterator(uint64_t mask, uint64_t start_bit) : m_mask(mask), m_bit(start_bit) 
+        iterator(T mask, T start_bit) : m_mask(mask), m_bit(start_bit) 
         { 
             if (!is_bit_set(m_mask, m_bit)) // starting position is not set
             {
@@ -35,6 +35,11 @@ public:
         }
 
         T operator*() const
+        {
+            return m_bit;
+        }
+
+        T value() const
         {
             return m_bit;
         }
@@ -84,14 +89,22 @@ public:
         }
     };
 
-    BitmaskIterator(T mask, T start_bit = 0) : m_mask(mask), m_bit(start_bit)
+    /**
+     * @brief a forward iterator that iterates over the set bits in a bitmask
+     *
+     * @note the values returned by the iterator are the bit positions, i.e {0,1,4} for a bitmask 0x13
+     *
+     * @tparam mask the bitmask to iterate over (an unsigned integer)
+     * @tparam start_bit the starting bit position (an unsigned integer, default = 0)
+     */
+    BitmaskIterator(T mask, T start_bit = 0) : m_mask(mask), m_start_bit(start_bit)
     {
         static_assert(std::is_unsigned<T>::value, "T must be of an unsigned integer type");
     }
 
     iterator begin()
     {
-        return iterator(m_mask, m_bit);
+        return iterator(m_mask, m_start_bit);
     }
 
     iterator end()
